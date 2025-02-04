@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Main Page</title>
+  <style>
+    /* Simple CSS for styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    header, footer {
+      background-color: #333;
+      color: #fff;
+      padding: 1em;
+      text-align: center;
+    }
+    nav ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    nav li {
+      display: inline;
+      margin: 0 1em;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    main {
+      padding: 2em;
+    }
+    /* Styles for the editable table */
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 1em;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+      min-width: 80px;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    td:focus {
+      outline: 2px solid #4A90E2;
+    }
+    /* Style for the search input area */
+    .search-container {
+      margin-bottom: 1em;
+    }
+    .search-container input {
+      padding: 0.5em;
+      width: 250px;
+      font-size: 1em;
+    }
+    .search-container button {
+      padding: 0.5em 1em;
+      font-size: 1em;
+      margin-left: 0.5em;
+      cursor: pointer;
+    }
+  </style>
+  <script>
+    // Function to load saved table data from localStorage
+    function loadTableData() {
+      const savedData = localStorage.getItem('tableData');
+      if (savedData) {
+        // Parse the stored JSON data
+        const tableData = JSON.parse(savedData);
+        tableData.forEach(item => {
+          const cell = document.querySelector('td[data-cell="' + item.id + '"]');
+          if (cell) {
+            cell.innerText = item.content;
+          }
+        });
+      }
+    }
+
+    // Function to save table data to localStorage
+    function saveTableData() {
+      const cells = document.querySelectorAll('td[contenteditable="true"]');
+      const tableData = [];
+      cells.forEach(cell => {
+        const cellId = cell.getAttribute('data-cell');
+        tableData.push({ id: cellId, content: cell.innerText });
+      });
+      localStorage.setItem('tableData', JSON.stringify(tableData));
+    }
+
+    // Search function to filter table rows by book title
+    function searchBooks() {
+      // Get the search term and convert it to upper case for case-insensitive comparison
+      const input = document.getElementById("searchInput");
+      const filter = input.value.toUpperCase();
+      // Get the table and all its rows (skip the header row)
+      const table = document.getElementById("bookTable");
+      const tr = table.getElementsByTagName("tr");
+
+      // Loop through all table rows and hide those that don't match the search query
+      // Start at index 1 to skip the header row
+      for (let i = 1; i < tr.length; i++) {
+        // Get the first cell (Book Title)
+        const td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+          const txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+
+    // Add event listeners once the DOM content has loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      loadTableData();
+      // Attach a blur event to each editable cell to save data when editing is done
+      const cells = document.querySelectorAll('td[contenteditable="true"]');
+      cells.forEach(cell => {
+        cell.addEventListener('blur', saveTableData);
+      });
+    });
+  </script>
+</head>
+<body>
+  <header>
+    <h1>Welcome to My Website</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <!-- Link to the About page -->
+        <li><a href="About.html">About</a></li>
+        <!-- You can add more links, e.g., Contact -->
+        <li><a href="Contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Main Page</h2>
+    <p>This is the main page of the website. Click on the "About" link above to learn more about us.</p>
+    
+    <!-- Search Section -->
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Search for a book title">
+      <button onclick="searchBooks()">Search</button>
+    </div>
+
+    <h3>Editable Excel-like Sheet</h3>
+    <p>You can click on any cell below to edit its content. Changes will be saved automatically.</p>
+    <table id="bookTable">
+      <thead>
+        <tr>
+          <th>Book Title</th>
+          <th>Book Author</th>
+          <th>Book Location</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <!-- Each cell has a unique data-cell attribute -->
+          <td contenteditable="true" data-cell="r1c1">Editable cell</td>
+          <td contenteditable="true" data-cell="r1c2">Editable cell</td>
+          <td contenteditable="true" data-cell="r1c3">Editable cell</td>
+        </tr>
+        <tr>
+          <td contenteditable="true" data-cell="r2c1">Editable cell</td>
+          <td contenteditable="true" data-cell="r2c2">Editable cell</td>
+          <td contenteditable="true" data-cell="r2c3">Editable cell</td>
+        </tr>
+        <tr>
+          <td contenteditable="true" data-cell="r3c1">Editable cell</td>
+          <td contenteditable="true" data-cell="r3c2">Editable cell</td>
+          <td contenteditable="true" data-cell="r3c3">Editable cell</td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 David Lawrence. All rights reserved.</p>
+  </footer>
+</body>
+</html>
